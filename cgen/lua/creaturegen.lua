@@ -23,7 +23,7 @@ function onGenerateButtonPressed()
 	creData = nil; 
 	if (nil ~= cgen_node) then
 		local nodes = cgen_node.getChildren(); 
-		local inputText = nodes["input"].getValue();
+		local inputText = nodes["input"].getText();
 		if Interface.getVersion() >= 4 then
 			inputText = inputText:gsub("</p><p>", "</p>\r\n<p>");
 		end
@@ -2282,7 +2282,11 @@ function stripString(data)
 	data = data:gsub('&#151;','--');
 	data = data:gsub('&#150;','-');
 	data = data:gsub('&#215;','x'); 
-	data = data:gsub('&#146;','\''); 
+	data = data:gsub('&#146;','\'');
+	data = data:gsub('&#8211','-');
+	data = data:gsub('&#x2013','-');
+	data = data:gsub('&#x2014','=-');
+	data = data:gsub('&#8217;', '\'')
 
 	-- UTF-8 codes
 	data = data:gsub('\\u2013','-'); 
@@ -2290,6 +2294,10 @@ function stripString(data)
 	data = data:gsub('\\u2019','\''); 
 	data = data:gsub('\\u201d','\"'); 
 	data = data:gsub('\\u201c','\"'); 
+ 
+	-- UTF-8 characters
+	data = data:gsub('—','--');
+	data = data:gsub('–','-');
 
 	return data; 
 end
