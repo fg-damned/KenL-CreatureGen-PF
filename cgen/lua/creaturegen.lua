@@ -15,6 +15,51 @@
 	GNU General Public License for more details.
 ]]--
 
+function onGenerateButtonPressed()
+	local creList, creData, err, errmsg; 
+	local cgen_window = Interface.findWindow("cgen_window","cgen");
+	local cgen_node = cgen_window.getDatabaseNode();
+
+	creData = nil; 
+	if (nil ~= cgen_node) then
+		local nodes = cgen_node.getChildren(); 
+		local inputText = nodes["input"].getValue();
+		if Interface.getVersion() >= 4 then
+			inputText = inputText:gsub("</p><p>", "</p>\r\n<p>");
+		end
+		creData = CreatureGen.genesis(inputText); 
+		cgen_node.createChild('lograw','formattedtext'); 
+		local lnode = cgen_node.getChild('lograw');
+		lnode.setValue(creData['log']); 
+		cgen_node.getChild('log').setValue(''); 
+
+		local logLevel = DB.getValue(cgen_node,'loglevel',''); 
+		CreatureGen.dlog('loglevel on creation is ' .. tostring(logLevel)); 
+		CreatureGenWindow.processLog(tonumber(logLevel)); 
+
+		if creData.creature.error == true then
+			return;
+		end
+		local npclist = DB.findNode('npc');
+		Debug.console(tostring(npclist),self); 
+		if npclist then
+			creList = npclist.createChild();
+		end
+		err, errmsg = pcall(CreatureGen.populate,creList,creData); 
+		if not err then
+			CreatureGen.addError('Error when populating character record: ' .. errmsg); 
+			CreatureGen.sendErrors(); 
+			CreatureGen.sendWarnings(); 
+			creList.delete(); 
+		else
+			local npcWind = Interface.openWindow("npc",creList);
+			local log = CreatureGen.dumpLog(5); 
+			lnode.setValue(log);
+			CreatureGenWindow.processLog(tonumber(logLevel)); 
+		end
+	end
+end
+
 --[[
 	LUA is a pain in the posterior
 ]]--
