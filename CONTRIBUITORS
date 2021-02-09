@@ -1,3 +1,9 @@
+Corun
+	- CreatureGen.lua : onGenerateButtonPressed(), stripString() [BUG]
+
+Moon Wizard
+	- CreatureGen.lua : onGenerateButtonPressed()
+
 Chris B. (BigD3m0n) (Kuthulu)
 	- CreatureGen.lua : parseTactics()
 
